@@ -9,21 +9,25 @@ CONST : 'const' ;
 INF : 'inf' ;
 PI : 'pi' ;
 VAR : 'var' ;
+
+// Not a reserved word, but still needs to be defined before NAME
 WHILE : 'while' ;
+
+CHARACTER : '$' (.|'\\'.) ;
 
 CLASSNAME : [A-Z] [a-zA-Z0-9_]* ;
 
-FLOAT : [-]? [0-9]+ '.' [0-9]+ ;
+FLOAT : [0-9]+ '.' [0-9]+ ;
 FLOAT_FLAT : [0-9]+ 'b'+ ;
 FLOAT_FLAT_CENTS : [0-9]+ 'b' [0-9]+ ;
-FLOAT_RADIX : [-]? [1-9] [0-9]* 'r' [a-zA-Z0-9]+ '.' [A-Z0-9]+ ;
-FLOAT_SCI : [-]? [0-9]+ ('.' [0-9]+)? 'e' ('-' | '+')? [0-9]+ ;
+FLOAT_RADIX : [1-9] [0-9]* 'r' [a-zA-Z0-9]+ '.' [A-Z0-9]+ ;
+FLOAT_SCI : [0-9]+ ('.' [0-9]+)? 'e' ('-' | '+')? [0-9]+ ;
 FLOAT_SHARP : [0-9]+ 's'+ ;
 FLOAT_SHARP_CENTS : [0-9]+ 's' [0-9]+ ;
 
-INT : [-]? [0-9]+ ;
-INT_HEX : [-]? '0x' [0-9a-f]* ;
-INT_RADIX : [-]? [1-9] [0-9]* 'r' [a-zA-Z0-9]+ ;
+INT : [0-9]+ ;
+INT_HEX : '0x' [0-9a-f]* ;
+INT_RADIX : [1-9] [0-9]* 'r' [a-zA-Z0-9]+ ;
 
 KEYWORD : [a-z] [a-zA-Z0-9_]* ':' ;
 

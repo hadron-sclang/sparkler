@@ -11,8 +11,8 @@ topLevelStatement : classDef
                   | interpreterCode
                   ;
 
-classDef : CLASSNAME superclass? CURLY_OPEN classVarDecl* method* CURLY_CLOSE
-         | CLASSNAME SQUARE_OPEN name? SQUARE_CLOSE superclass? CURLY_OPEN classVarDecl* method* CURLY_CLOSE
+classDef : CLASSNAME superclass? CURLY_OPEN classVarDecl* methodDef* CURLY_CLOSE
+         | CLASSNAME SQUARE_OPEN name? SQUARE_CLOSE superclass? CURLY_OPEN classVarDecl* methodDef* CURLY_CLOSE
          ;
 
 superclass : COLON CLASSNAME ;
@@ -43,12 +43,17 @@ coreLiteral : integer
             | floatingPoint
             | strings
             | symbol
+            | CHARACTER
             ;
 
-integer : INT
-        | INT_HEX
-        | INT_RADIX
+integer : integerNumber
+        | MINUS integerNumber
         ;
+
+integerNumber : INT
+              | INT_HEX
+              | INT_RADIX
+              ;
 
 floatingPoint : floatLiteral
               | floatLiteral PI
@@ -58,11 +63,15 @@ floatingPoint : floatLiteral
               | accidental
               ;
 
-floatLiteral : FLOAT
-             | FLOAT_RADIX
-             | FLOAT_SCI
-             | INF
+floatLiteral : floatNumber
+             | MINUS floatNumber
              ;
+
+floatNumber : FLOAT
+            | FLOAT_RADIX
+            | FLOAT_SCI
+            | INF
+            ;
 
 accidental : FLOAT_FLAT
            | FLOAT_FLAT_CENTS
@@ -102,9 +111,9 @@ rSlotDef   : LESS_THAN? name
            | LESS_THAN? name EQUALS literal
            ;
 
-method : ASTERISK? methodName CURLY_OPEN argDecls? varDecls? primitive? body? CURLY_CLOSE ;
+methodDef : ASTERISK? methodDefName CURLY_OPEN argDecls? varDecls? primitive? body? CURLY_CLOSE ;
 
-methodName : name
+methodDefName : name
            | binop
            ;
 
@@ -121,7 +130,25 @@ varDef : name
        | name PAREN_OPEN exprSeq PAREN_CLOSE
        ;
 
-expr : expr1
+expr : literal
+     | block
+     | listComp
+     | name
+     | UNDERSCORE
+     | PAREN_OPEN exprSeq PAREN_CLOSE
+     | TILDE name
+     | SQUARE_OPEN arrayElems SQUARE_CLOSE
+     | PAREN_OPEN numericSeries PAREN_CLOSE
+     | PAREN_OPEN COLON numericSeries PAREN_CLOSE
+     | PAREN_OPEN dictLiterals? PAREN_CLOSE
+     | expr SQUARE_OPEN argList SQUARE_CLOSE
+     | expr SQUARE_OPEN argList SQUARE_CLOSE EQUALS expr
+        // IndexSeries
+     | expr SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE
+     | expr SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE
+        // IndexSeriesAssign (expr)
+     | expr SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE EQUALS expr
+     | expr SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE EQUALS expr
      | CLASSNAME
      | expr binopKey adverb? expr
      | name EQUALS expr
@@ -129,55 +156,31 @@ expr : expr1
      | expr DOT name EQUALS expr
      | name PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr
      | HASH multiAssignVars EQUALS expr
-        // These are msgsends, which are expr1s
-        | expr DOT PAREN_OPEN PAREN_CLOSE block*
-        | expr DOT PAREN_OPEN keyArgList? COMMA? PAREN_CLOSE block*
-        | expr DOT name PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
-        | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | expr DOT name PAREN_OPEN PAREN_CLOSE block*
-        | expr DOT name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | expr DOT name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | expr DOT name block*
+     // messages
+     | name block+
+     | PAREN_OPEN binopKey PAREN_CLOSE block+
+     | name PAREN_OPEN PAREN_CLOSE block+
+     | name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN PAREN_CLOSE block+
+     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+     | name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+     | CLASSNAME SQUARE_OPEN arrayElems? SQUARE_CLOSE
+     | CLASSNAME block+
+     | CLASSNAME PAREN_OPEN PAREN_CLOSE block*
+     | CLASSNAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
+     | CLASSNAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+     | CLASSNAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+     | expr DOT PAREN_OPEN PAREN_CLOSE block*
+     | expr DOT PAREN_OPEN keyArgList? COMMA? PAREN_CLOSE block*
+     | expr DOT name PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
+     | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+     | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+     | expr DOT name PAREN_OPEN PAREN_CLOSE block*
+     | expr DOT name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+     | expr DOT name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+     | expr DOT name block*
      ;
-
-expr1 : literal
-      | block
-      | listComp
-      | name
-      | UNDERSCORE
-      | message
-      | PAREN_OPEN exprSeq PAREN_CLOSE
-      | TILDE name
-      | SQUARE_OPEN arrayElems SQUARE_CLOSE
-      | PAREN_OPEN numericSeries PAREN_CLOSE
-      | PAREN_OPEN COLON numericSeries PAREN_CLOSE
-      | PAREN_OPEN dictLiterals? PAREN_CLOSE
-      | expr1 SQUARE_OPEN argList SQUARE_CLOSE
-      | expr1 SQUARE_OPEN argList SQUARE_CLOSE EQUALS expr
-        // IndexSeries
-      | expr1 SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE
-      | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE
-        // IndexSeriesAssign (expr)
-      | expr1 SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE EQUALS expr
-      | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE EQUALS expr
-      ;
-
-message : name block+
-        | PAREN_OPEN binopKey PAREN_CLOSE block+
-        | name PAREN_OPEN PAREN_CLOSE block+
-        | name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN PAREN_CLOSE block+
-        | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | CLASSNAME SQUARE_OPEN arrayElems? SQUARE_CLOSE
-        | CLASSNAME block+
-        | CLASSNAME PAREN_OPEN PAREN_CLOSE block*
-        | CLASSNAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
-        | CLASSNAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | CLASSNAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        ;
 
 block : HASH? CURLY_OPEN argDecls? varDecls? body? CURLY_CLOSE ;
 
@@ -254,7 +257,7 @@ pipeDef : name EQUALS? literal?
 
 primitive : PRIMITIVE SEMICOLON? ;
 
-classExtension  : PLUS CLASSNAME CURLY_OPEN method* CURLY_CLOSE
+classExtension  : PLUS CLASSNAME CURLY_OPEN methodDef* CURLY_CLOSE
                 ;
 
 interpreterCode : PAREN_OPEN varDecls+ body PAREN_CLOSE
