@@ -4,9 +4,7 @@ options {
   tokenVocab=SCLexer;
 }
 
-root : topLevelStatement* EOF
-     | /* empty */
-     ;
+root : topLevelStatement* EOF ;
 
 topLevelStatement : classDef
                   | classExtension
@@ -139,32 +137,6 @@ expr1 : literal
       | indexSeries
       ;
 
-block : HASH? CURLY_OPEN argDecls? varDecls? body? CURLY_CLOSE ;
-
-body : return?
-     | exprSeq return?
-     ;
-
-return : CARET expr SEMICOLON? ;
-
-exprSeq : expr (SEMICOLON expr)* SEMICOLON? ;
-
-varDecls    : (VAR varDefList SEMICOLON)*? ;
-
-listComp : CURLY_OPEN COLON exprSeq COMMA qualifiers CURLY_CLOSE
-         | CURLY_OPEN SEMICOLON exprSeq COMMA qualifiers CURLY_CLOSE
-         ;
-
-qualifiers : qualifier (COMMA qualifier)* ;
-
-qualifier : NAME ARROW_LEFT exprSeq
-          | NAME NAME ARROW_LEFT exprSeq
-          | exprSeq
-          | VAR NAME EQUALS exprSeq
-          | COLON COLON exprSeq
-          | COLON WHILE exprSeq
-          ;
-
 message : NAME block+
         | PAREN_OPEN binopKey PAREN_CLOSE block+
         | NAME PAREN_OPEN PAREN_CLOSE block+
@@ -190,6 +162,38 @@ message : NAME block+
         | expr DOT NAME block*
         ;
 
+indexSeries : expr1 SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE
+            | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE
+            ;
+
+indexSeriesAssign : indexSeries EQUALS expr;
+
+block : HASH? CURLY_OPEN argDecls? varDecls? body? CURLY_CLOSE ;
+
+body : return
+     | exprSeq return?
+     ;
+
+return : CARET expr SEMICOLON? ;
+
+exprSeq : expr (SEMICOLON expr)* SEMICOLON? ;
+
+varDecls : (VAR varDefList SEMICOLON)+ ;
+
+listComp : CURLY_OPEN COLON exprSeq COMMA qualifiers CURLY_CLOSE
+         | CURLY_OPEN SEMICOLON exprSeq COMMA qualifiers CURLY_CLOSE
+         ;
+
+qualifiers : qualifier (COMMA qualifier)* ;
+
+qualifier : NAME ARROW_LEFT exprSeq
+          | NAME NAME ARROW_LEFT exprSeq
+          | exprSeq
+          | VAR NAME EQUALS exprSeq
+          | COLON COLON exprSeq
+          | COLON WHILE exprSeq
+          ;
+
 binopKey : BINOP
          | KEYWORD
          ;
@@ -211,12 +215,6 @@ arrayElem : (exprSeq COLON)? exprSeq
 numericSeries : exprSeq (COMMA exprSeq)? DOT_DOT exprSeq?
               | DOT_DOT exprSeq
               ;
-
-indexSeries : expr1 SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE
-            | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE
-            ;
-
-indexSeriesAssign : indexSeries EQUALS expr;
 
 adverb : DOT NAME
        | DOT integer

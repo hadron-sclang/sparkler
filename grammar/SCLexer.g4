@@ -62,7 +62,7 @@ PIPE : '|' ;
 
 PLUS : '+' ;
 
-PRIMITIVE : '_' [a-zA-Z0-9_]* ;
+PRIMITIVE : '_' [a-zA-Z0-9_]+ ;
 
 READ_WRITE : '<>' ;
 
