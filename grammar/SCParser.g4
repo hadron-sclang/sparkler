@@ -105,7 +105,7 @@ rSlotDef   : LESS_THAN? name
 method : ASTERISK? methodName CURLY_OPEN argDecls? varDecls? primitive? body? CURLY_CLOSE ;
 
 methodName : name
-           | BINOP
+           | binop
            ;
 
 argDecls : ARG varDefList SEMICOLON
@@ -125,7 +125,7 @@ expr : expr1
      | CLASSNAME
      | expr binopKey adverb? expr
      | name EQUALS expr
-     | TILDE  name EQUALS expr
+     | TILDE name EQUALS expr
      | expr DOT name EQUALS expr
      | name PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr
      | HASH multiAssignVars EQUALS expr
@@ -205,9 +205,21 @@ qualifier : name ARROW_LEFT exprSeq
           | COLON WHILE exprSeq
           ;
 
-binopKey : BINOP
+binopKey : binop
          | KEYWORD
          ;
+
+binop : ARROW_LEFT
+      | ASTERISK
+      | EQUALS
+      | GREATER_THAN
+      | LESS_THAN
+      | MINUS
+      | PIPE
+      | PLUS
+      | READ_WRITE
+      | BINOP
+      ;
 
 argList : exprSeq (COMMA exprSeq)* ;
 
