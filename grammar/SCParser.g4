@@ -36,7 +36,7 @@ literal : coreLiteral
         ;
 
 coreLiteral : integer
-            | float
+            | floatingPoint
             | strings
             | symbol
             ;
@@ -46,12 +46,12 @@ integer : INT
         | INT_RADIX
         ;
 
-float : floatLiteral
-      | floatLiteral PI
-      | integer PI
-      | PI
-      | MINUS PI
-      ;
+floatingPoint : floatLiteral
+              | floatLiteral PI
+              | integer PI
+              | PI
+              | MINUS PI
+              ;
 
 floatLiteral : FLOAT
              | FLOAT_RADIX
@@ -110,7 +110,6 @@ varDef : NAME
        ;
 
 expr : expr1
-     | indexSeriesAssign
      | CLASSNAME
      | expr binopKey adverb? expr
      | NAME EQUALS expr
@@ -118,7 +117,16 @@ expr : expr1
      | expr DOT NAME EQUALS expr
      | NAME PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr
      | HASH multiAssignVars EQUALS expr
-     | expr1 SQUARE_OPEN argList SQUARE_CLOSE EQUALS expr
+        // problem is that these are msgsends, which are expr1s
+        | expr DOT PAREN_OPEN PAREN_CLOSE block*
+        | expr DOT PAREN_OPEN keyArgList? COMMA? PAREN_CLOSE block*
+        | expr DOT NAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
+        | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+        | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+        | expr DOT NAME PAREN_OPEN PAREN_CLOSE block*
+        | expr DOT NAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+        | expr DOT NAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+        | expr DOT NAME block*
      ;
 
 expr1 : literal
@@ -134,7 +142,13 @@ expr1 : literal
       | PAREN_OPEN COLON numericSeries PAREN_CLOSE
       | PAREN_OPEN dictLiterals? PAREN_CLOSE
       | expr1 SQUARE_OPEN argList SQUARE_CLOSE
-      | indexSeries
+      | expr1 SQUARE_OPEN argList SQUARE_CLOSE EQUALS expr
+        // IndexSeries
+      | expr1 SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE
+      | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE
+        // IndexSeriesAssign (expr)
+      | expr1 SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE EQUALS expr
+      | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE EQUALS expr
       ;
 
 message : NAME block+
@@ -151,30 +165,15 @@ message : NAME block+
         | CLASSNAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
         | CLASSNAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
         | CLASSNAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | expr DOT PAREN_OPEN PAREN_CLOSE block*
-        | expr DOT PAREN_OPEN keyArgList? COMMA? PAREN_CLOSE block*
-        | expr DOT NAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
-        | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | expr DOT NAME PAREN_OPEN PAREN_CLOSE block*
-        | expr DOT NAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | expr DOT NAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | expr DOT NAME block*
         ;
-
-indexSeries : expr1 SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE
-            | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE
-            ;
-
-indexSeriesAssign : indexSeries EQUALS expr;
 
 block : HASH? CURLY_OPEN argDecls? varDecls? body? CURLY_CLOSE ;
 
-body : return
-     | exprSeq return?
+body : returnExpr
+     | exprSeq returnExpr?
      ;
 
-return : CARET expr SEMICOLON? ;
+returnExpr : CARET expr SEMICOLON? ;
 
 exprSeq : expr (SEMICOLON expr)* SEMICOLON? ;
 
