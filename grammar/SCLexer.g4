@@ -34,8 +34,12 @@ ELLIPSES : '...' ;
 EQUALS : '=' ;
 
 FLOAT : [-]? [0-9]+ '.' [0-9]+ ;
+FLOAT_FLAT : [0-9]+ 'b'+ ;
+FLOAT_FLAT_CENTS : [0-9]+ 'b' [0-9]+ ;
 FLOAT_RADIX : [-]? [1-9] [0-9]* 'r' [a-zA-Z0-9]+ '.' [A-Z0-9]+ ;
 FLOAT_SCI : [-]? [0-9]+ ('.' [0-9]+)? 'e' ('-' | '+')? [0-9]+ ;
+FLOAT_SHARP : [0-9]+ 's'+ ;
+FLOAT_SHARP_CENTS : [0-9]+ 's' [0-9]+ ;
 
 GREATER_THAN : '>' ;
 

@@ -12,7 +12,7 @@ topLevelStatement : classDef
                   ;
 
 classDef : CLASSNAME superclass? CURLY_OPEN classVarDecl* method* CURLY_CLOSE
-         | CLASSNAME SQUARE_OPEN NAME? SQUARE_CLOSE superclass? CURLY_OPEN classVarDecl* method* CURLY_CLOSE
+         | CLASSNAME SQUARE_OPEN name? SQUARE_CLOSE superclass? CURLY_OPEN classVarDecl* method* CURLY_CLOSE
          ;
 
 superclass : COLON CLASSNAME ;
@@ -24,12 +24,16 @@ classVarDecl : CLASSVAR rwSlotDefList SEMICOLON
 
 rwSlotDefList : rwSlotDef (COMMA rwSlotDef)* ;
 
-rwSlotDef : rwSpec? NAME (EQUALS literal)? ;
+rwSlotDef : rwSpec? name (EQUALS literal)? ;
 
 rwSpec : LESS_THAN
        | GREATER_THAN
        | READ_WRITE
        ;
+
+name : NAME
+     | WHILE
+     ;
 
 literal : coreLiteral
         | listLiteral
@@ -51,12 +55,19 @@ floatingPoint : floatLiteral
               | integer PI
               | PI
               | MINUS PI
+              | accidental
               ;
 
 floatLiteral : FLOAT
              | FLOAT_RADIX
              | FLOAT_SCI
              ;
+
+accidental : FLOAT_FLAT
+           | FLOAT_FLAT_CENTS
+           | FLOAT_SHARP
+           | FLOAT_SHARP_CENTS
+           ;
 
 strings : STRING+ ;
 
@@ -67,7 +78,7 @@ symbol : SYMBOL_QUOTE
 listLiteral : coreLiteral
             | innerListLiteral
             | innerDictLiteral
-            | NAME
+            | name
             ;
 
 innerListLiteral : SQUARE_OPEN listLiterals? SQUARE_CLOSE
@@ -86,57 +97,57 @@ dictLiteral : listLiteral COLON listLiteral
 
 constDefList : rSlotDef (COMMA rSlotDef)* ;
 
-rSlotDef   : LESS_THAN? NAME
-           | LESS_THAN? NAME EQUALS literal
+rSlotDef   : LESS_THAN? name
+           | LESS_THAN? name EQUALS literal
            ;
 
 method : ASTERISK? methodName CURLY_OPEN argDecls? varDecls? primitive? body? CURLY_CLOSE ;
 
-methodName : NAME
+methodName : name
            | BINOP
            ;
 
 argDecls : ARG varDefList SEMICOLON
-         | ARG varDefList? ELLIPSES NAME SEMICOLON
+         | ARG varDefList? ELLIPSES name SEMICOLON
          | PIPE pipeDefList PIPE
-         | PIPE pipeDefList? ELLIPSES NAME PIPE
+         | PIPE pipeDefList? ELLIPSES name PIPE
          ;
 
 varDefList : varDef (COMMA varDef)* ;
 
-varDef : NAME
-       | NAME EQUALS expr
-       | NAME PAREN_OPEN exprSeq PAREN_CLOSE
+varDef : name
+       | name EQUALS expr
+       | name PAREN_OPEN exprSeq PAREN_CLOSE
        ;
 
 expr : expr1
      | CLASSNAME
      | expr binopKey adverb? expr
-     | NAME EQUALS expr
-     | TILDE  NAME EQUALS expr
-     | expr DOT NAME EQUALS expr
-     | NAME PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr
+     | name EQUALS expr
+     | TILDE  name EQUALS expr
+     | expr DOT name EQUALS expr
+     | name PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr
      | HASH multiAssignVars EQUALS expr
         // These are msgsends, which are expr1s
         | expr DOT PAREN_OPEN PAREN_CLOSE block*
         | expr DOT PAREN_OPEN keyArgList? COMMA? PAREN_CLOSE block*
-        | expr DOT NAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
+        | expr DOT name PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
         | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
         | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | expr DOT NAME PAREN_OPEN PAREN_CLOSE block*
-        | expr DOT NAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | expr DOT NAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-        | expr DOT NAME block*
+        | expr DOT name PAREN_OPEN PAREN_CLOSE block*
+        | expr DOT name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+        | expr DOT name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+        | expr DOT name block*
      ;
 
 expr1 : literal
       | block
       | listComp
-      | NAME
+      | name
       | UNDERSCORE
       | message
       | PAREN_OPEN exprSeq PAREN_CLOSE
-      | TILDE NAME
+      | TILDE name
       | SQUARE_OPEN arrayElems SQUARE_CLOSE
       | PAREN_OPEN numericSeries PAREN_CLOSE
       | PAREN_OPEN COLON numericSeries PAREN_CLOSE
@@ -151,13 +162,13 @@ expr1 : literal
       | expr1 SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE EQUALS expr
       ;
 
-message : NAME block+
+message : name block+
         | PAREN_OPEN binopKey PAREN_CLOSE block+
-        | NAME PAREN_OPEN PAREN_CLOSE block+
-        | NAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
+        | name PAREN_OPEN PAREN_CLOSE block+
+        | name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
         | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN PAREN_CLOSE block+
         | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-        | NAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
+        | name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
         | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
         | CLASSNAME SQUARE_OPEN arrayElems? SQUARE_CLOSE
         | CLASSNAME block+
@@ -185,10 +196,10 @@ listComp : CURLY_OPEN COLON exprSeq COMMA qualifiers CURLY_CLOSE
 
 qualifiers : qualifier (COMMA qualifier)* ;
 
-qualifier : NAME ARROW_LEFT exprSeq
-          | NAME NAME ARROW_LEFT exprSeq
+qualifier : name ARROW_LEFT exprSeq
+          | name name ARROW_LEFT exprSeq
           | exprSeq
-          | VAR NAME EQUALS exprSeq
+          | VAR name EQUALS exprSeq
           | COLON COLON exprSeq
           | COLON WHILE exprSeq
           ;
@@ -215,17 +226,17 @@ numericSeries : exprSeq (COMMA exprSeq)? DOT_DOT exprSeq?
               | DOT_DOT exprSeq
               ;
 
-adverb : DOT NAME
+adverb : DOT name
        | DOT integer
        | DOT PAREN_OPEN exprSeq PAREN_CLOSE
        ;
 
-multiAssignVars : NAME (COMMA NAME)* (ELLIPSES NAME)? ;
+multiAssignVars : name (COMMA name)* (ELLIPSES name)? ;
 
 pipeDefList : pipeDef (COMMA pipeDef)* ;
 
-pipeDef : NAME EQUALS? literal?
-        | NAME EQUALS? PAREN_OPEN exprSeq PAREN_CLOSE
+pipeDef : name EQUALS? literal?
+        | name EQUALS? PAREN_OPEN exprSeq PAREN_CLOSE
         ;
 
 primitive : PRIMITIVE SEMICOLON? ;
