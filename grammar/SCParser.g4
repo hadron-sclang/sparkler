@@ -117,7 +117,7 @@ expr : expr1
      | expr DOT NAME EQUALS expr
      | NAME PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr
      | HASH multiAssignVars EQUALS expr
-        // problem is that these are msgsends, which are expr1s
+        // These are msgsends, which are expr1s
         | expr DOT PAREN_OPEN PAREN_CLOSE block*
         | expr DOT PAREN_OPEN keyArgList? COMMA? PAREN_CLOSE block*
         | expr DOT NAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*

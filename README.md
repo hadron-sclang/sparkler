@@ -8,10 +8,17 @@ to ANTLR to generate a SuperCollider parser in SuperCollider.
 
 # Using the Generated Parsers
 
+TBD
+
 # Rebuilding The Parser Libraries
+
+TBD
 
 ## macOS
 
+Homebrew includes ANTLR4:
+
 `brew install antlr`
 
-To get vscode extension working, install JRE from https://www.java.com/en/download/
+To get the [VScode ANTLR](https://github.com/mike-lischke/vscode-antlr4)
+extension working, install the [JRE](https://www.java.com/en/download/).
