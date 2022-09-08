@@ -61,6 +61,7 @@ floatingPoint : floatLiteral
 floatLiteral : FLOAT
              | FLOAT_RADIX
              | FLOAT_SCI
+             | INF
              ;
 
 accidental : FLOAT_FLAT

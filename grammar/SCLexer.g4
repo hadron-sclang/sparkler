@@ -45,6 +45,8 @@ GREATER_THAN : '>' ;
 
 HASH : '#' ;
 
+INF : 'inf' ;
+
 INT : [-]? [1-9] [0-9]* ;
 INT_HEX : [-]? '0x' [0-9a-f]* ;
 INT_RADIX : [-]? [1-9] [0-9]* 'r' [a-zA-Z0-9]+ ;
