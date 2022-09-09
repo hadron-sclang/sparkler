@@ -2,12 +2,23 @@ lexer grammar SCLexer;
 
 // Lexer rules are in priority order, so need to define more specific tokens before more general ones.
 
+STRING : '"' (~'"'|'\\' .)* '"' ;
+
+SYMBOL_QUOTE : '\'' (~'\''|'\\' .)* '\'' ;
+SYMBOL_SLASH : '\\' [a-zA-Z0-9_]* ;
+
+// Comments (not to be confused with binops)
+COMMENT_LINE : '//' ~('\n'|'\r')*? ('\n'|'\r') -> channel(2) ;
+COMMENT_BLOCK : '/*' (COMMENT_BLOCK|.)*? '*/' -> channel(2) ;
+
 // Reserved words
 ARG : 'arg' ;
 CLASSVAR : 'classvar' ;
 CONST : 'const' ;
+FALSE : 'false' ;
 INF : 'inf' ;
 PI : 'pi' ;
+TRUE : 'true' ;
 VAR : 'var' ;
 
 // Not a reserved word, but still needs to be defined before NAME
@@ -34,15 +45,6 @@ KEYWORD : [a-z] [a-zA-Z0-9_]* ':' ;
 NAME : [a-z] [a-zA-Z0-9_]* ;
 
 PRIMITIVE : '_' [a-zA-Z0-9_]+ ;
-
-STRING : '"' (.|'\\"')*? '"' ;
-
-SYMBOL_QUOTE : '\'' (.|'\\\'')*? ;
-SYMBOL_SLASH : '\\' [a-zA-Z0-9_]* ;
-
-// Comments (not to be confused with binops)
-COMMENT_LINE : '//' .*? '\n' -> channel(2) ;
-COMMENT_BLOCK : '/*' -> channel(2), pushMode(INSIDE_BLOCK) ;
 
 // Valid binop constructions that also happen to be used in the language, so their definition comes before BINOP.
 ARROW_LEFT : '<-' ;
@@ -76,8 +78,3 @@ DOT_DOT : '..' ;
 ELLIPSES : '...' ;
 
 WHITESPACE : [ \t\r\n]+ -> channel(HIDDEN) ;
-
-mode INSIDE_BLOCK;
-END_BLOCK : '*/' -> channel(2), popMode ;
-IGNORE : . -> more ;
-NEST_BLOCK : '/*' -> channel(2), pushMode(INSIDE_BLOCK) ;

@@ -36,13 +36,14 @@ name : NAME
      ;
 
 literal : coreLiteral
-        | listLiteral
+        | list
         ;
 
 coreLiteral : integer
             | floatingPoint
             | strings
             | symbol
+            | booleanConstant
             | CHARACTER
             ;
 
@@ -85,21 +86,27 @@ symbol : SYMBOL_QUOTE
        | SYMBOL_SLASH
        ;
 
+booleanConstant : TRUE
+                | FALSE
+                ;
+
+list : HASH innerListLiteral ;
+
+innerListLiteral : SQUARE_OPEN listLiterals? SQUARE_CLOSE
+                 | CLASSNAME SQUARE_OPEN listLiterals? SQUARE_CLOSE
+                 ;
+
 listLiteral : coreLiteral
             | innerListLiteral
             | innerDictLiteral
             | name
             ;
 
-innerListLiteral : SQUARE_OPEN listLiterals? SQUARE_CLOSE
-                 | CLASSNAME SQUARE_OPEN listLiterals? SQUARE_CLOSE
-                 ;
-
 listLiterals : listLiteral (COMMA listLiteral)* ;
 
 innerDictLiteral : PAREN_OPEN dictLiterals? PAREN_CLOSE ;
 
-dictLiterals : dictLiteral (COMMA dictLiteral)* ;
+dictLiterals : dictLiteral (COMMA dictLiteral)* COMMA? ;
 
 dictLiteral : listLiteral COLON listLiteral
             | KEYWORD listLiteral
@@ -137,7 +144,7 @@ expr : literal
      | UNDERSCORE
      | PAREN_OPEN exprSeq PAREN_CLOSE
      | TILDE name
-     | SQUARE_OPEN arrayElems SQUARE_CLOSE
+     | SQUARE_OPEN arrayElems? SQUARE_CLOSE
      | PAREN_OPEN numericSeries PAREN_CLOSE
      | PAREN_OPEN COLON numericSeries PAREN_CLOSE
      | PAREN_OPEN dictLiterals? PAREN_CLOSE
@@ -168,12 +175,12 @@ expr : literal
      | CLASSNAME SQUARE_OPEN arrayElems? SQUARE_CLOSE
      | CLASSNAME block+
      | CLASSNAME PAREN_OPEN PAREN_CLOSE block*
-     | CLASSNAME PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
+     | CLASSNAME PAREN_OPEN keyArgList PAREN_CLOSE block*
      | CLASSNAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
      | CLASSNAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
      | expr DOT PAREN_OPEN PAREN_CLOSE block*
-     | expr DOT PAREN_OPEN keyArgList? COMMA? PAREN_CLOSE block*
-     | expr DOT name PAREN_OPEN keyArgList COMMA? PAREN_CLOSE block*
+     | expr DOT PAREN_OPEN keyArgList? PAREN_CLOSE block*
+     | expr DOT name PAREN_OPEN keyArgList PAREN_CLOSE block*
      | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
      | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
      | expr DOT name PAREN_OPEN PAREN_CLOSE block*
@@ -190,7 +197,7 @@ body : returnExpr
 
 returnExpr : CARET expr SEMICOLON? ;
 
-exprSeq : expr (SEMICOLON expr)* SEMICOLON? ;
+exprSeq : expr (SEMICOLON expr)*? SEMICOLON? ;
 
 varDecls : (VAR varDefList SEMICOLON)+ ;
 
@@ -224,17 +231,18 @@ binop : ARROW_LEFT
       | BINOP
       ;
 
-argList : exprSeq (COMMA exprSeq)* ;
+argList : exprSeq (COMMA exprSeq)* COMMA? ;
 
-keyArgList : keyArg (COMMA keyArg)* ;
+keyArgList : keyArg (COMMA keyArg)* COMMA? ;
 
 keyArg : KEYWORD exprSeq ;
 
 performArgList : (argList COMMA)? ASTERISK exprSeq ;
 
-arrayElems : arrayElem (COMMA arrayElem)* ;
+arrayElems : arrayElem (COMMA arrayElem)*? COMMA? ;
 
-arrayElem : (exprSeq COLON)? exprSeq
+arrayElem : exprSeq
+          | exprSeq COLON exprSeq
           | KEYWORD exprSeq
           ;
 
