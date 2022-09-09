@@ -12,8 +12,10 @@ int main(int argc, const char* argv[]) {
       return -1;
     }
 
+    std::string filename(argv[1]);
+
     antlr4::ANTLRFileStream input;
-    input.loadFromFile(std::string(argv[1]));
+    input.loadFromFile(filename);
 
     sprklr::SCLexer lexer(&input);
     antlr4::CommonTokenStream tokens(&lexer);
@@ -23,11 +25,13 @@ int main(int argc, const char* argv[]) {
     antlr4::tree::ParseTree *tree = parser.root();
 
     if (parser.getNumberOfSyntaxErrors()) {
-        std::cerr << "got " << parser.getNumberOfSyntaxErrors() << " syntax errors.\n";
+        for (auto token : tokens.getTokens()) {
+            std::cout << token->toString() << std::endl;
+        }
+        std::cerr << filename << " got " << parser.getNumberOfSyntaxErrors() << " syntax errors.\n\n";
         return -1;
     }
 
     std::cout << tree->toStringTree(&parser) << std::endl;
-
     return 0;
 }
