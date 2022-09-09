@@ -145,6 +145,7 @@ expr : literal
      | UNDERSCORE
      | PAREN_OPEN exprSeq PAREN_CLOSE
      | TILDE name
+     | GRAVE expr
      | SQUARE_OPEN arrayElems? SQUARE_CLOSE
      | PAREN_OPEN numericSeries PAREN_CLOSE
      | PAREN_OPEN COLON numericSeries PAREN_CLOSE

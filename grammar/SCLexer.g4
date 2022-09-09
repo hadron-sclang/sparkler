@@ -65,6 +65,7 @@ COLON : ':' ;
 COMMA : ',' ;
 CURLY_OPEN : '{' ;
 CURLY_CLOSE : '}' ;
+GRAVE : '`' ;
 HASH : '#' ;
 TILDE : '~' ;
 PAREN_OPEN : '(' ;

@@ -25,16 +25,13 @@ int main(int argc, const char* argv[]) {
     antlr4::tree::ParseTree *tree = parser.root();
 
     if (parser.getNumberOfSyntaxErrors()) {
-/*
         for (auto token : tokens.getTokens()) {
             std::cout << token->toString() << std::endl;
         }
-*/
         std::cerr << filename << " got " << parser.getNumberOfSyntaxErrors() << " syntax errors.\n\n";
         return -1;
     }
-/*
+
     std::cout << tree->toStringTree(&parser) << std::endl;
-*/
     return 0;
 }
