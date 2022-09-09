@@ -2,13 +2,13 @@ lexer grammar SCLexer;
 
 // Lexer rules are in priority order, so need to define more specific tokens before more general ones.
 
-STRING : '"' (~'"'|'\\' .)* '"' ;
+STRING : '"' (~["\\] |'\\' .)* '"' ;
 
-SYMBOL_QUOTE : '\'' (~'\''|'\\' .)* '\'' ;
+SYMBOL_QUOTE : '\'' (~['\\]|'\\' .)* '\'' ;
 SYMBOL_SLASH : '\\' [a-zA-Z0-9_]* ;
 
 // Comments (not to be confused with binops)
-COMMENT_LINE : '//' ~('\n'|'\r')*? ('\n'|'\r') -> channel(2) ;
+COMMENT_LINE : '//' ~('\n'|'\r')*? ('\n'|'\r'|EOF) -> channel(2) ;
 COMMENT_BLOCK : '/*' (COMMENT_BLOCK|.)*? '*/' -> channel(2) ;
 
 // Reserved words
@@ -17,6 +17,7 @@ CLASSVAR : 'classvar' ;
 CONST : 'const' ;
 FALSE : 'false' ;
 INF : 'inf' ;
+NIL : 'nil' ;
 PI : 'pi' ;
 TRUE : 'true' ;
 VAR : 'var' ;
@@ -37,10 +38,10 @@ FLOAT_SHARP : [0-9]+ 's'+ ;
 FLOAT_SHARP_CENTS : [0-9]+ 's' [0-9]+ ;
 
 INT : [0-9]+ ;
-INT_HEX : '0x' [0-9a-f]* ;
+INT_HEX : '0x' [0-9a-fA-F]* ;
 INT_RADIX : [1-9] [0-9]* 'r' [a-zA-Z0-9]+ ;
 
-KEYWORD : [a-z] [a-zA-Z0-9_]* ':' ;
+KEYWORD : [a-zA-Z0-9_]+ ':' ;
 
 NAME : [a-z] [a-zA-Z0-9_]* ;
 

@@ -45,6 +45,7 @@ coreLiteral : integer
             | symbol
             | booleanConstant
             | CHARACTER
+            | NIL
             ;
 
 integer : integerNumber
@@ -147,7 +148,7 @@ expr : literal
      | SQUARE_OPEN arrayElems? SQUARE_CLOSE
      | PAREN_OPEN numericSeries PAREN_CLOSE
      | PAREN_OPEN COLON numericSeries PAREN_CLOSE
-     | PAREN_OPEN dictLiterals? PAREN_CLOSE
+     | PAREN_OPEN dictElements? PAREN_CLOSE
      | expr SQUARE_OPEN argList SQUARE_CLOSE
      | expr SQUARE_OPEN argList SQUARE_CLOSE EQUALS expr
         // IndexSeries
@@ -250,6 +251,12 @@ numericSeries : exprSeq (COMMA exprSeq)? DOT_DOT exprSeq?
               | DOT_DOT exprSeq
               ;
 
+dictElements : dictElement (COMMA dictElement)* COMMA? ;
+
+dictElement : exprSeq COLON exprSeq
+            | KEYWORD exprSeq
+            ;
+
 adverb : DOT name
        | DOT integer
        | DOT PAREN_OPEN exprSeq PAREN_CLOSE
@@ -257,7 +264,7 @@ adverb : DOT name
 
 multiAssignVars : name (COMMA name)* (ELLIPSES name)? ;
 
-pipeDefList : pipeDef (COMMA pipeDef)* ;
+pipeDefList : pipeDef (COMMA? pipeDef)* ;
 
 pipeDef : name EQUALS? literal?
         | name EQUALS? PAREN_OPEN exprSeq PAREN_CLOSE
