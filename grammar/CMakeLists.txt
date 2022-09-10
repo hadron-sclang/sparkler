@@ -9,12 +9,16 @@ antlr_target(SCParser SCParser.g4 PARSER
              DEPENDS_ANTLR SCLexer
              COMPILE_FLAGS -lib ${ANTLR_SCLexer_OUTPUT_DIR})
 
-# add antrl4cpp artifacts to project environment
-include_directories(${ANTLR4_INCLUDE_DIRS})
-
 add_library(sprklr STATIC
             ${ANTLR_SCLexer_CXX_OUTPUTS}
             ${ANTLR_SCParser_CXX_OUTPUTS})
 
-target_include_directories(sprklr PUBLIC ${ANTLR_SCLexer_OUTPUT_DIR})
-target_include_directories(sprklr PUBLIC ${ANTLR_SCParser_OUTPUT_DIR})
+target_include_directories(sprklr PUBLIC
+    ${ANTLR4_INCLUDE_DIRS}
+    ${ANTLR_SCLexer_OUTPUT_DIR}
+    ${ANTLR_SCParser_OUTPUT_DIR}
+)
+
+target_link_libraries(sprklr
+    antlr4_static
+)
