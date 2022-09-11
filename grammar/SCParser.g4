@@ -122,8 +122,8 @@ rSlotDef   : LESS_THAN? name
 methodDef : ASTERISK? methodDefName CURLY_OPEN argDecls? varDecls? primitive? body? CURLY_CLOSE ;
 
 methodDefName : name
-           | binop
-           ;
+              | binop
+              ;
 
 argDecls : ARG varDefList SEMICOLON
          | ARG varDefList? ELLIPSES name SEMICOLON
