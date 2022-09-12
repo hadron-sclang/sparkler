@@ -20,22 +20,22 @@ for general language analysis purposes.
 A parser that produces a *concrete* syntax tree which is a strict representation of the input program is useful for a
 variety of purposes. It can help with code completion, automatic code reformatting, bug detection, and program
 translation. To aid in parsing SuperCollider input, Sparkler provides a SuperCollider grammar for the ANTLR parser
-generator. ANTLR can generate parsers in a variety of languages including C++, Python, Java, JavaScript and more.
+generator. ANTLR can generate parsers in a variety of languages, including C++, Python, Java, JavaScript and more.
 
-This is can be a confusing point when talking about parser generators, there can be up to three different programming
+This is can be a confusing point when talking about parser generators; there can be up to three different programming
 languages under consideration:
 
 * The language the generated parser will parse, called the *input language* here. Sparkler includes a grammar to parse
-  SuperCollider programs, and could also be extended to parse inputs containing SCLang mixed with other inputs.
-* The language the generated parser is in, here called the *parser language.* Sparkler currently supports generating C++
-  parsers, but adding parser languages from the set that ANTLR already supports should be relatively straightforward.
-  PRs welcome!
+  SuperCollider programs and could also be extended to parse inputs containing SCLang mixed with other inputs.
+* The language the generated parser is in, here called the *parser language.* Sparkler currently supports generating
+  C++ parsers but adding parser languages from the set that ANTLR already supports should be relatively
+  straightforward. PRs welcome!
 * The language the parser generator itself is written in, which we'll call the *implementation language*. ANTLR is
   written in Java.
 
-At present, ANTLR doesn't support SuperCollider as a parser language. That is, no one has yet written the requisite Java
-code (ANTLR's implementation language) to generate SuperCollider output code. I'd like to include SuperCollider parser
-generation for ANTLR in this project, and will likely get to it at some point, but PRs welcome for this, too!
+At present, ANTLR doesn't support SuperCollider as a parser language. No one has yet written the requisite Java code
+(ANTLR's implementation language) to generate SuperCollider output code. I'd like to include SuperCollider parser
+generation for ANTLR in this project and will likely get to it at some point, but PRs welcome for this, too!
 
 ## Sparkler C++ Library
 
