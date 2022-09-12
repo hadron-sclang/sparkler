@@ -8,7 +8,9 @@ to ANTLR to generate a SuperCollider parser in SuperCollider.
 
 # Using the Generated Parsers
 
-TBD
+The SuperCollider grammar files are in the `grammar` folder. The ANTLR
+program can generate code in a variety of languages. The generated code
+can parse SuperCollider input programs to produce a parse tree.
 
 # Rebuilding The Parser Libraries
 
