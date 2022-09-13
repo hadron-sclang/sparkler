@@ -22,7 +22,7 @@ variety of purposes. It can help with code completion, automatic code reformatti
 translation. To aid in parsing SuperCollider input, Sparkler provides a SuperCollider grammar for the ANTLR parser
 generator. ANTLR can generate parsers in a variety of languages, including C++, Python, Java, JavaScript and more.
 
-This is can be a confusing point when talking about parser generators; there can be up to three different programming
+This can be a confusing point when talking about parser generators; there can be up to three different programming
 languages under consideration:
 
 * The language the generated parser will parse, called the *input language* here. Sparkler includes a grammar to parse
