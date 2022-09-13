@@ -7,7 +7,9 @@ antlr_target(SCLexer SCLexer.g4 LEXER
 antlr_target(SCParser SCParser.g4 PARSER
              PACKAGE sprklr
              DEPENDS_ANTLR SCLexer
-             COMPILE_FLAGS -lib ${ANTLR_SCLexer_OUTPUT_DIR})
+             COMPILE_FLAGS -lib ${ANTLR_SCLexer_OUTPUT_DIR}
+             LISTENER
+             VISITOR)
 
 add_library(sprklr STATIC
             ${ANTLR_SCLexer_CXX_OUTPUTS}
