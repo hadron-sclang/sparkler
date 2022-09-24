@@ -43,6 +43,12 @@ The CMakeLists.txt files describe a C++ library called `sprklr` that bundles the
 ANTLR C++ runtime static library. The `demo/` directory contains an example C++ program that prints the parse tree from
 a provided input file.
 
+## Linux
+
+You need a working ANTLR4 install. To generate correct C++ code you will need ANTLR 4.11 or newer. As of Sept 2022
+my Linux distro was behind that version and needed a manual install. See the ANTLR
+[Getting Started](https://github.com/antlr/antlr4/blob/master/doc/getting-started.md) for more information.
+
 ## macOS
 
 Homebrew includes ANTLR4:
