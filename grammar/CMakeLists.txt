@@ -21,6 +21,6 @@ target_include_directories(sprklr PUBLIC
     ${ANTLR_SCParser_OUTPUT_DIR}
 )
 
-target_link_libraries(sprklr
+target_link_libraries(sprklr PUBLIC
     antlr4_static
 )
