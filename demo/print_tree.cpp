@@ -32,6 +32,6 @@ int main(int argc, const char* argv[]) {
         return -1;
     }
 
-    std::cout << tree->toStringTree(&parser) << std::endl;
+    std::cout << tree->toStringTree(&parser, true) << std::endl;
     return 0;
 }

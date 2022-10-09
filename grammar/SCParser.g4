@@ -138,57 +138,54 @@ varDef : name
        | name PAREN_OPEN exprSeq PAREN_CLOSE
        ;
 
-expr : literal
-     | block
-     | listComp
-     | name
-     | UNDERSCORE
-     | PAREN_OPEN exprSeq PAREN_CLOSE
-     | TILDE name
-     | GRAVE expr
-     | SQUARE_OPEN arrayElems? SQUARE_CLOSE
-     | PAREN_OPEN numericSeries PAREN_CLOSE
-     | PAREN_OPEN COLON numericSeries PAREN_CLOSE
-     | PAREN_OPEN dictElements? PAREN_CLOSE
-     | expr SQUARE_OPEN argList SQUARE_CLOSE
-     | expr SQUARE_OPEN argList SQUARE_CLOSE EQUALS expr
+expr : literal                                                                            # ExprLiteral
+     | block                                                                              # ExprBlock
+     | listComp                                                                           # ExprListComp
+     | name                                                                               # ExprName
+     | UNDERSCORE                                                                         # ExprCurryArg
+     | PAREN_OPEN exprSeq PAREN_CLOSE                                                     # ExprExprSeq
+     | TILDE name                                                                         # ExprGlobal
+     | GRAVE expr                                                                         # ExprGrave
+     | SQUARE_OPEN arrayElems? SQUARE_CLOSE                                               # ExprArray
+     | PAREN_OPEN numericSeries PAREN_CLOSE                                               # ExprNumericSeries
+     | PAREN_OPEN COLON numericSeries PAREN_CLOSE                                         # ExprNumericSeriesSuffix
+     | PAREN_OPEN dictElements? PAREN_CLOSE                                               # ExprNewEvent
+     | expr SQUARE_OPEN argList SQUARE_CLOSE                                              # ExprArrayRead
+     | expr SQUARE_OPEN argList SQUARE_CLOSE EQUALS expr                                  # ExprArrayWrite
         // IndexSeries
-     | expr SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE
-     | expr SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE
+     | expr SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE                             # ExprIndexSeries
+     | expr SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE                                      # ExprIndexSeriesSuffix
         // IndexSeriesAssign (expr)
-     | expr SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE EQUALS expr
-     | expr SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE EQUALS expr
-     | CLASSNAME
-     | expr binopKey adverb? expr
-     | name EQUALS expr
-     | TILDE name EQUALS expr
-     | expr DOT name EQUALS expr
-     | name PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr
-     | HASH multiAssignVars EQUALS expr
+     | expr SQUARE_OPEN argList DOT_DOT exprSeq? SQUARE_CLOSE EQUALS expr                 # ExprIndexSeriesAssign
+     | expr SQUARE_OPEN DOT_DOT exprSeq SQUARE_CLOSE EQUALS expr                          # ExprIndexSeriesAssignSuffix
+     | CLASSNAME                                                                          # ExprClassname
+     | expr binopKey adverb? expr                                                         # ExprBinop
+     | name EQUALS expr                                                                   # ExprAssign
+     | TILDE name EQUALS expr                                                             # ExprAssignGlobal
+     | expr DOT name EQUALS expr                                                          # ExprAssignDotName
+     | name PAREN_OPEN argList keyArgList? PAREN_CLOSE EQUALS expr                        # ExprAssignTBD
+     | HASH multiAssignVars EQUALS expr                                                   # ExprMultiAssign
      // messages
-     | name block+
-     | PAREN_OPEN binopKey PAREN_CLOSE block+
-     | name PAREN_OPEN PAREN_CLOSE block+
-     | name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN PAREN_CLOSE block+
-     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-     | name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-     | CLASSNAME SQUARE_OPEN arrayElems? SQUARE_CLOSE
-     | CLASSNAME block+
-     | CLASSNAME PAREN_OPEN PAREN_CLOSE block*
-     | CLASSNAME PAREN_OPEN keyArgList PAREN_CLOSE block*
-     | CLASSNAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-     | CLASSNAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-     | expr DOT PAREN_OPEN PAREN_CLOSE block*
-     | expr DOT PAREN_OPEN keyArgList? PAREN_CLOSE block*
-     | expr DOT name PAREN_OPEN keyArgList PAREN_CLOSE block*
-     | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-     | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-     | expr DOT name PAREN_OPEN PAREN_CLOSE block*
-     | expr DOT name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*
-     | expr DOT name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE
-     | expr DOT name block*
+     | PAREN_OPEN binopKey PAREN_CLOSE block+                                             # ExprMsgKeyBlock
+     | name (PAREN_OPEN PAREN_CLOSE)? block+                                              # ExprMsgNameBlock
+     | name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*                             # ExprMsgDotNameArgs
+     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN PAREN_CLOSE block+                      # ExprMsgKeyBlock
+     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN argList keyArgList? PAREN_CLOSE block*  # ExprMsgKeyArgs
+     | name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE                             # ExprMsgNamePerform
+     | PAREN_OPEN binopKey PAREN_CLOSE PAREN_OPEN performArgList keyArgList? PAREN_CLOSE  # ExprMsgKeyPerform
+     | CLASSNAME SQUARE_OPEN arrayElems? SQUARE_CLOSE                                     # ExprMsgNewCollection
+     | CLASSNAME block+                                                                   # ExprMsgClassBlock
+     | CLASSNAME PAREN_OPEN PAREN_CLOSE block*                                            # ExprMsgClass
+     | CLASSNAME PAREN_OPEN keyArgList PAREN_CLOSE block*                                 # ExprMsgClassKeyArgs
+     | CLASSNAME PAREN_OPEN argList keyArgList? PAREN_CLOSE block*                        # ExprMsgClassArgs
+     | CLASSNAME PAREN_OPEN performArgList keyArgList? PAREN_CLOSE                        # ExprMsgClassPerform
+     | expr DOT PAREN_OPEN keyArgList? PAREN_CLOSE block*                                 # ExprMsgDot
+     | expr DOT name PAREN_OPEN keyArgList PAREN_CLOSE block*                             # ExprMsgDotNameKeyArgs
+     | expr DOT PAREN_OPEN argList keyArgList? PAREN_CLOSE block*                         # ExprMsgDotArgs
+     | expr DOT PAREN_OPEN performArgList keyArgList? PAREN_CLOSE                         # ExprMsgDotPerform
+     | expr DOT name (PAREN_OPEN PAREN_CLOSE)? block*                                     # ExprMsgDotName
+     | expr DOT name PAREN_OPEN argList keyArgList? PAREN_CLOSE block*                    # ExprMsgDotNameArgs
+     | expr DOT name PAREN_OPEN performArgList keyArgList? PAREN_CLOSE                    # ExprMsgDotNamePerform
      ;
 
 block : HASH? CURLY_OPEN argDecls? varDecls? body? CURLY_CLOSE ;
