@@ -79,4 +79,7 @@ DOT : '.' ;
 DOT_DOT : '..' ;
 ELLIPSES : '...' ;
 
-WHITESPACE : [ \t\r\n]+ -> channel(HIDDEN) ;
+SPACE: ' ' -> channel(HIDDEN) ;
+TAB: '\t' -> channel(HIDDEN) ;
+CARRIAGE_RETURN: '\r' -> channel(HIDDEN) ;
+NEWLINE: '\n' -> channel(HIDDEN) ;
