@@ -56,12 +56,14 @@ else()
   endif()
 endif()
 
-if(${CMAKE_GENERATOR} MATCHES ".* Makefiles")
+#if(${CMAKE_GENERATOR} MATCHES ".* Makefiles")
   # This avoids
   # 'warning: jobserver unavailable: using -j1. Add '+' to parent make rule.'
-  set(ANTLR4_BUILD_COMMAND $(MAKE))
-elseif(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
-  set(ANTLR4_BUILD_COMMAND
+#  set(ANTLR4_BUILD_COMMAND $(MAKE))
+#set(ANTLR4_BUILD_COMMAND "/usr/local/bin/emmake make -j")
+#elseif(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
+if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
+set(ANTLR4_BUILD_COMMAND
       ${CMAKE_COMMAND}
           --build .
           --config $(Configuration)
@@ -78,6 +80,8 @@ else()
           --build .
           --target)
 endif()
+
+message(STATUS "${ANTLR4_BUILD_COMMAND}")
 
 if(NOT DEFINED ANTLR4_WITH_STATIC_CRT)
   set(ANTLR4_WITH_STATIC_CRT ON)
@@ -112,6 +116,8 @@ else()
       BUILD_IN_SOURCE 1
       SOURCE_DIR ${ANTLR4_ROOT}
       SOURCE_SUBDIR runtime/Cpp
+      CMAKE_COMMAND "/usr/local/bin/emcmake"
+      CMAKE_ARGS cmake
       CMAKE_CACHE_ARGS
           -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
           -DWITH_STATIC_CRT:BOOL=${ANTLR4_WITH_STATIC_CRT}
@@ -150,28 +156,28 @@ target_include_directories(antlr4_static
         ${ANTLR4_INCLUDE_DIRS}
 )
 
-ExternalProject_Add_Step(
-    antlr4_runtime
-    build_shared
-    COMMAND ${ANTLR4_BUILD_COMMAND} antlr4_shared
+#ExternalProject_Add_Step(
+#    antlr4_runtime
+#    build_shared
+#    COMMAND ${ANTLR4_BUILD_COMMAND} antlr4_shared
     # Depend on target instead of step (a custom command)
     # to avoid running dependent steps concurrently
-    DEPENDS antlr4_runtime
-    BYPRODUCTS ${ANTLR4_SHARED_LIBRARIES} ${ANTLR4_RUNTIME_LIBRARIES}
-    EXCLUDE_FROM_MAIN 1
-    WORKING_DIRECTORY ${ANTLR4_BUILD_DIR})
-ExternalProject_Add_StepTargets(antlr4_runtime build_shared)
+#    DEPENDS antlr4_runtime
+#    BYPRODUCTS ${ANTLR4_SHARED_LIBRARIES} ${ANTLR4_RUNTIME_LIBRARIES}
+#    EXCLUDE_FROM_MAIN 1
+#    WORKING_DIRECTORY ${ANTLR4_BUILD_DIR})
+#ExternalProject_Add_StepTargets(antlr4_runtime build_shared)
 
-add_library(antlr4_shared SHARED IMPORTED)
-add_dependencies(antlr4_shared antlr4_runtime-build_shared)
-set_target_properties(antlr4_shared PROPERTIES
-                      IMPORTED_LOCATION ${ANTLR4_RUNTIME_LIBRARIES})
-target_include_directories(antlr4_shared
-    INTERFACE
-        ${ANTLR4_INCLUDE_DIRS}
-)
+#add_library(antlr4_shared SHARED IMPORTED)
+#add_dependencies(antlr4_shared antlr4_runtime-build_shared)
+#set_target_properties(antlr4_shared PROPERTIES
+#                      IMPORTED_LOCATION ${ANTLR4_RUNTIME_LIBRARIES})
+#target_include_directories(antlr4_shared
+#    INTERFACE
+#        ${ANTLR4_INCLUDE_DIRS}
+#)
 
-if(ANTLR4_SHARED_LIBRARIES)
-  set_target_properties(antlr4_shared PROPERTIES
-                        IMPORTED_IMPLIB ${ANTLR4_SHARED_LIBRARIES})
-endif()
+#if(ANTLR4_SHARED_LIBRARIES)
+#  set_target_properties(antlr4_shared PROPERTIES
+#                        IMPORTED_IMPLIB ${ANTLR4_SHARED_LIBRARIES})
+#endif()
